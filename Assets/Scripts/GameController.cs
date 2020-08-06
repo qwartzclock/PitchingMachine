@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
 using UnityEngine.XR;
 
@@ -200,6 +201,22 @@ public class GameController : MonoBehaviour
 		}
 	}
 
+    private string GenerateScore()
+	{
+        return UnityEngine.Random.Range(1000.0f, 10000.0f).ToString();
+	}
+
+    private void AddScore(int player)
+	{
+        if (player > 0 && player < 5)
+        {
+            //Get the scorecard 
+            Transform scorecard = GameScreen.transform.Find("PlayersInGame");
+            Text playerScore = scorecard.GetChild(player - 1).GetChild(0).GetComponent<Text>();
+            playerScore.text = "Player " + player + " \tScore " + GenerateScore();
+        }
+	}
+
     private void ChangeActivePlayer(int pitchRequest)
 	{
         if (activePlayer > 0)
@@ -212,6 +229,7 @@ public class GameController : MonoBehaviour
             activePlayer = pitchRequest;
             Transform newActivePlayerCard = PlayerListUI.transform.GetChild(pitchRequest - 1);
             newActivePlayerCard.GetChild(1).gameObject.SetActive(true);
+            AddScore(activePlayer);
         }
 	}
 
@@ -233,10 +251,14 @@ public class GameController : MonoBehaviour
     private int CheckPlayerWantsToPitch()
 	{
         if (Input.GetKeyDown(KeyCode.Alpha1)) return 1;
+        if (Input.GetButtonDown("Joy1")) return 1;
         if (Input.GetKeyDown(KeyCode.Alpha2)) return 2;
+        if (Input.GetButtonDown("Joy2")) return 2;
         if (Input.GetKeyDown(KeyCode.Alpha3)) return 3;
+        if (Input.GetButtonDown("Joy3")) return 3;
         if (Input.GetKeyDown(KeyCode.Alpha4)) return 4;
-		return 0;
+        if (Input.GetButtonDown("Joy4")) return 4;
+        return 0;
 	}
 
     public void StartPitch()
